@@ -66,7 +66,7 @@ app.post("/add", (req, res) => {
   db.defaults.query(sql, (err, result) => {
     if (err) throw err;
     const id = result.insertId;
-    const link = `http://${front_host}:${front_port}/${id}`;
+    const link = `http://${front_host}:${front_port}/records/${id}`;
     qrcode.toFile(`./images/${id}.png`, link, options);
     res.json(`http://${host}:${port}/images/${id}.png`)
   });
