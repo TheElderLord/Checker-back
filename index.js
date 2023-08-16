@@ -60,13 +60,13 @@ app.get("/search", (req, res) => {
 
 //id, fullname, iin, birthday, organ-title, studying-period, type, serial-number, number
 app.post("/add", (req, res) => {
-  const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number } = req.body;
+  const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,lang } = req.body;
   const sql = `INSERT INTO records ( fullname, iin, birthday, organ_title, studying_period, study_type, serial_number, diplom_number)
    VALUES ('${fullname}', '${iin}', '${birthday}', '${organ_title}', '${studying_period}', '${type}', '${serialNumber}', '${number}');`;
   db.defaults.query(sql, (err, result) => {
     if (err) throw err;
     const id = result.insertId;
-    const link = `http://${front_host}:${front_port}/records/${id}`;
+    const link = `http://${front_host}:${front_port}/records?id=${id}&lang=${lang}`;
     qrcode.toFile(`./images/${id}.png`, link, options);
     res.json(`http://${host}:${port}/images/${id}.png`)
   });
