@@ -80,4 +80,17 @@ exports.addRecord = (req, res) => {
       res.send("Record updated...");
     });
   };
-  
+  exports.deleteRecordById = (req,res) =>{
+    const {id} = req.params;
+    const sql = `Delete from records where id = ${id}`;
+    db.defaults.query(sql,(err,result)=>{
+      if(err){
+        throw err;
+      }
+      db.defaults.query("SELECT * FROM records", (err, rows) => {
+        if (err) throw err;
+        res.json(rows);
+      });
+      
+    })
+  }

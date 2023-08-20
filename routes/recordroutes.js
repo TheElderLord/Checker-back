@@ -6,7 +6,8 @@ const recordController = require("../controller/recordController");
 
 router.route("/records").get(recordController.getAll).post(recordController.addRecord);
 
-router.route("/records/:id" ).get(recordController.getRecordById).put(recordController.updateRecordById);
+router.route("/records/:id" ).get(recordController.getRecordById).put(recordController.updateRecordById)
+.delete(recordController.deleteRecordById);
 
 
 //route for searching by iin
