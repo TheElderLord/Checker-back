@@ -27,7 +27,7 @@ const options = {
     // console.log(iin,serialNumber,number)
     db.defaults.query(`SELECT * FROM records WHERE iin = ${iin} and serial_number = ${serialNumber}
     and diplom_number = ${number}`, (err, rows) => {
-      if (err) throw err;
+      if (err) console.log(err);
       if(rows.length == 0){
         return res.send("Not found");
       }
@@ -42,7 +42,7 @@ exports.addRecord = (req, res) => {
     const sql = `INSERT INTO records ( fullname, iin, birthday, organ_title, studying_period, study_type, serial_number, diplom_number)
      VALUES ('${fullname}', '${iin}', '${birthday}', '${organ_title}', '${studying_period}', '${type}', '${serialNumber}', '${number}');`;
     db.defaults.query(sql, (err, result) => {
-      if (err) throw err;
+      if (err) console.log(err);
       const id = result.insertId;
       console.log(lang);
       const outputPath = path.join(__dirname, '..', 'images', `${id}.png`);
@@ -56,7 +56,7 @@ exports.addRecord = (req, res) => {
 
   exports.getAll = (req, res) => {
     db.defaults.query("SELECT * FROM records", (err, rows) => {
-      if (err) throw err;
+      if (err) console.log(err);
       res.send(rows);
     });
   };
@@ -66,7 +66,7 @@ exports.addRecord = (req, res) => {
   exports.getRecordById = (req, res) => {
     const { id } = req.params;
     db.defaults.query(`SELECT * FROM records WHERE id = ${id}`, (err, rows) => {
-      if (err) throw err;
+      if (err) console.log(err);
       res.send(rows);
     });
   };
@@ -76,7 +76,7 @@ exports.addRecord = (req, res) => {
     const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number } = req.body;
     const sql = `UPDATE records SET fullname = '${fullname}', iin = '${iin}', birthday = '${birthday}', organ_title = '${organ_title}', studying_period = '${studying_period}', study_type = '${type}', serial_number = '${serialNumber}', diplom_number = '${number}' WHERE id = ${id}`;
     db.defaults.query(sql, (err, result) => {
-      if (err) throw err;
+      if (err) console.log(err);
       res.send("Record updated...");
     });
   };
@@ -88,7 +88,7 @@ exports.addRecord = (req, res) => {
         throw err;
       }
       db.defaults.query("SELECT * FROM records", (err, rows) => {
-        if (err) throw err;
+        if (err) console.log(err);
         res.json(rows);
       });
       
