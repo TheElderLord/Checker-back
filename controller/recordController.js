@@ -38,9 +38,9 @@ const options = {
 
 //id, fullname, iin, birthday, organ-title, studying-period, type, serial-number, number
 exports.addRecord = (req, res) => {
-    const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,lang } = req.body;
-    const sql = `INSERT INTO records ( fullname, iin, birthday, organ_title, studying_period, study_type, serial_number, diplom_number)
-     VALUES ('${fullname}', '${iin}', '${birthday}', '${organ_title}', '${studying_period}', '${type}', '${serialNumber}', '${number}');`;
+    const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,lang,speciality } = req.body;
+    const sql = `INSERT INTO records ( fullname, iin, birthday, organ_title, studying_period, study_type, serial_number, diplom_number,speciality)
+     VALUES ('${fullname}', '${iin}', '${birthday}', '${organ_title}', '${studying_period}', '${type}', '${serialNumber}', '${number}', '${speciality}');`;
     db.defaults.query(sql, (err, result) => {
       if (err) console.log(err);
       const id = result.insertId;
@@ -73,8 +73,8 @@ exports.addRecord = (req, res) => {
 
   exports.updateRecordById = (req, res) => {
     const { id } = req.params;
-    const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number } = req.body;
-    const sql = `UPDATE records SET fullname = '${fullname}', iin = '${iin}', birthday = '${birthday}', organ_title = '${organ_title}', studying_period = '${studying_period}', study_type = '${type}', serial_number = '${serialNumber}', diplom_number = '${number}' WHERE id = ${id}`;
+    const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,speciality } = req.body;
+    const sql = `UPDATE records SET fullname = '${fullname}', iin = '${iin}', birthday = '${birthday}', organ_title = '${organ_title}', studying_period = '${studying_period}', study_type = '${type}', serial_number = '${serialNumber}', diplom_number = '${number}', speciality = '${speciality}' WHERE id = ${id}`;
     db.defaults.query(sql, (err, result) => {
       if (err) console.log(err);
       res.send("Record updated...");
