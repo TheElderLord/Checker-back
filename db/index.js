@@ -23,4 +23,4 @@ connection.connect((err) => {
     console.log('Connected!');
 });
 
-exports.defaults = connection;
+module.exports = connection;

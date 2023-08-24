@@ -22,40 +22,94 @@ const options = {
 
 
 
-   exports.searchRecord = (req, res) => {
-    const { iin,serialNumber,number } = req.query;
-    // console.log(iin,serialNumber,number)
-    db.defaults.query(`SELECT * FROM records WHERE iin = ${iin} and serial_number = ${serialNumber}
-    and diplom_number = ${number}`, (err, rows) => {
-      if (err) console.log(err);
-      if(rows.length == 0){
+  exports.searchRecord = (req, res) => {
+    const { iin, serialNumber, number } = req.query;
+  
+    // Perform the database query
+    const query = `
+      SELECT * FROM records 
+      WHERE iin = ? AND serial_number = ? AND diplom_number = ?
+    `;
+  
+    db.query(query, [iin, serialNumber, number], (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Internal Server Error");
+      }
+  
+      if (rows.length === 0) {
         return res.send("Not found");
       }
+  
       res.send(rows);
     });
   };
 
 
 //id, fullname, iin, birthday, organ-title, studying-period, type, serial-number, number
+
 exports.addRecord = (req, res) => {
-    const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,lang,speciality } = req.body;
-    const sql = `INSERT INTO records ( fullname, iin, birthday, organ_title, studying_period, study_type, serial_number, diplom_number,speciality)
-     VALUES ('${fullname}', '${iin}', '${birthday}', '${organ_title}', '${studying_period}', '${type}', '${serialNumber}', '${number}', '${speciality}');`;
-    db.defaults.query(sql, (err, result) => {
-      if (err) console.log(err);
-      const id = result.insertId;
-      console.log(lang);
-      const outputPath = path.join(__dirname, '..', 'images', `${id}.png`);
+  const {
+    fullname,
+    iin,
+    birthday,
+    organ_title,
+    studying_period,
+    type,
+    serialNumber,
+    number,
+    lang,
+    speciality,
+  } = req.body;
 
-      const link = `http://${front_host}:${front_port}/records?id=${id}&lang=${lang}`;
+  const sql = `
+    INSERT INTO records (
+      fullname, iin, birthday, organ_title,
+      studying_period, study_type, serial_number,
+      diplom_number, speciality
+    ) VALUES (
+      ?, ?, ?, ?, ?, ?, ?, ?, ?
+    )
+  `;
 
-      qrcode.toFile(outputPath, link, options);
-      res.json(`http://${host}:${port}/images/${id}.png`)
+  const values = [
+    fullname,
+    iin,
+    birthday,
+    organ_title,
+    studying_period,
+    type,
+    serialNumber,
+    number,
+    speciality,
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    const id = result.insertId;
+    console.log(lang);
+    const outputPath = path.join(__dirname, '..', 'images', `${id}.png`);
+    
+    const link = `http://${front_host}:${front_port}/records?id=${id}&lang=${lang}`;
+
+    qrcode.toFile(outputPath, link, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'QR Code Generation Failed' });
+      }
+
+      res.json(`http://${host}:${port}/images/${id}.png`);
     });
-  };
+  });
+};
+
 
   exports.getAll = (req, res) => {
-    db.defaults.query("SELECT * FROM records", (err, rows) => {
+    db.query("SELECT * FROM records", (err, rows) => {
       if (err) console.log(err);
       res.send(rows);
     });
@@ -65,7 +119,7 @@ exports.addRecord = (req, res) => {
 
   exports.getRecordById = (req, res) => {
     const { id } = req.params;
-    db.defaults.query(`SELECT * FROM records WHERE id = ${id}`, (err, rows) => {
+    db.query(`SELECT * FROM records WHERE id = ${id}`, (err, rows) => {
       if (err) console.log(err);
       res.send(rows);
     });
@@ -75,7 +129,7 @@ exports.addRecord = (req, res) => {
     const { id } = req.params;
     const { fullname, iin, birthday, organ_title,studying_period,type,serialNumber,number,speciality } = req.body;
     const sql = `UPDATE records SET fullname = '${fullname}', iin = '${iin}', birthday = '${birthday}', organ_title = '${organ_title}', studying_period = '${studying_period}', study_type = '${type}', serial_number = '${serialNumber}', diplom_number = '${number}', speciality = '${speciality}' WHERE id = ${id}`;
-    db.defaults.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
       if (err) console.log(err);
       res.send("Record updated...");
     });
@@ -83,11 +137,11 @@ exports.addRecord = (req, res) => {
   exports.deleteRecordById = (req,res) =>{
     const {id} = req.params;
     const sql = `Delete from records where id = ${id}`;
-    db.defaults.query(sql,(err,result)=>{
+    db.query(sql,(err,result)=>{
       if(err){
         throw err;
       }
-      db.defaults.query("SELECT * FROM records", (err, rows) => {
+      db.query("SELECT * FROM records", (err, rows) => {
         if (err) console.log(err);
         res.json(rows);
       });
